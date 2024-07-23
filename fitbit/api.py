@@ -545,7 +545,7 @@ class Fitbit(object):
             base_date=self._get_date_string(base_date),
             end=end
         )
-        
+
         if timezone:
             url = url + ('?timezone=%s' % timezone)
 
@@ -558,8 +558,9 @@ class Fitbit(object):
         more granular level for a single day, defaulting to 1 minute intervals. To access this feature, one must
         fill out the Private Support form here (see https://dev.fitbit.com/docs/help/).
         For details on the resources available and more information on how to get access, see:
-
         https://dev.fitbit.com/docs/activity/#get-activity-intraday-time-series
+
+        Use this method to retrieve intraday data for AZM, activity and heart rate.
         """
 
         # Check that the time range is valid
@@ -576,7 +577,7 @@ class Fitbit(object):
         """
         if not detail_level in ['1sec', '1min', '15min']:
             raise ValueError("Period must be either '1sec', '1min', or '15min'")
-        
+
         if end_date:
             end = self._get_date_string(end_date)
         else:
@@ -604,6 +605,33 @@ class Fitbit(object):
             url = url + ('?timezone=%s' % timezone)
 
         return self.make_request(url)
+
+
+    def intraday_time_series2(self, resource, base_date='today', end_date=None):
+        """
+        The intraday time series extends the functionality of the regular time series, but returning data at a
+        more granular level for a single day, defaulting to 1 minute intervals. To access this feature, one must
+        fill out the Private Support form here (see https://dev.fitbit.com/docs/help/).
+        For details on the resources available and more information on how to get access, see:
+        https://dev.fitbit.com/docs/activity/#get-activity-intraday-time-series
+
+        Use this method to retrieve intraday data for breathing rate, HRV and SpO2.
+        """
+
+        url = "{0}/{1}/user/-/{resource}/date/{base_date}/".format(
+            *self._get_common_args(),
+            resource=resource,
+            base_date=self._get_date_string(base_date)
+        )
+
+        if end_date:
+            end = self._get_date_string(end_date)
+            url = url + end + '/'
+
+        url = url + 'all.json'
+
+        return self.make_request(url)
+
 
     def activity_stats(self, user_id=None, qualifier=''):
         """
